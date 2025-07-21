@@ -11,15 +11,26 @@ const fmt = bytes => {
     : kb.toFixed(1) + ' KB';
 };
 
-// UI helpers
 function enableStart() {
   startBtn.disabled = files.length === 0;
+  // Show files under the drop zone
+  let fileList = document.getElementById('selected-files');
+  if (!fileList) {
+    fileList = document.createElement('div');
+    fileList.id = 'selected-files';
+    fileList.className = 'mt-2 text-sm text-gray-600';
+    dropZone.appendChild(fileList);
+  }
+  fileList.innerHTML = files.length
+    ? "Selected: " + files.map(f => f.name).join(', ')
+    : "";
 }
 
 // Pick files
 function handleFiles(fileList){
   files = [...fileList].slice(0,20); // limit 20
   enableStart();
+  fileInput.value = ""; // Allow re-uploading the same file
 }
 
 dropZone.addEventListener('click', () => fileInput.click());
@@ -35,7 +46,6 @@ dropZone.addEventListener('drop', e => {
 });
 fileInput.addEventListener('change', e => handleFiles(e.target.files));
 
-// Compress
 startBtn.addEventListener('click', async () => {
   enableStart();
   resultsTbl.innerHTML = '';
