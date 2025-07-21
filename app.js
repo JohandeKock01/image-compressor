@@ -1,0 +1,71 @@
+const dropZone   = document.getElementById('drop-zone');
+const fileInput  = document.getElementById('file-input');
+const startBtn   = document.getElementById('start-btn');
+const resultsTbl = document.getElementById('results').querySelector('tbody');
+let files = [];
+
+const fmt = bytes => {
+  const kb = bytes / 1024;
+  return kb > 1024
+    ? (kb / 1024).toFixed(2) + ' MB'
+    : kb.toFixed(1) + ' KB';
+};
+
+// UI helpers
+function enableStart() {
+  startBtn.disabled = files.length === 0;
+}
+
+// Pick files
+function handleFiles(fileList){
+  files = [...fileList].slice(0,20); // limit 20
+  enableStart();
+}
+
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', e => {
+  e.preventDefault();
+  dropZone.classList.add('dragover');
+});
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  handleFiles(e.dataTransfer.files);
+});
+fileInput.addEventListener('change', e => handleFiles(e.target.files));
+
+// Compress
+startBtn.addEventListener('click', async () => {
+  enableStart();
+  resultsTbl.innerHTML = '';
+  resultsTbl.closest('table').classList.remove('hidden');
+
+  for(const file of files){
+    let compressedBlob;
+    if(file.type === 'image/png'){
+      const arrayBuffer = await file.arrayBuffer();
+      const png = UPNG.decode(arrayBuffer);
+      const quant = UPNG.encode([arrayBuffer], png.width, png.height, 256);
+      compressedBlob = new Blob([quant], {type:'image/png'});
+    } else {
+      compressedBlob = await imageCompression(file, {
+        maxSizeMB: 1,
+        useWebWorker: true
+      });
+    }
+
+    const percent = 100 - (compressedBlob.size / file.size * 100);
+    const url  = URL.createObjectURL(compressedBlob);
+
+    resultsTbl.insertAdjacentHTML('beforeend',`
+      <tr class="border-t">
+        <td>${file.name}</td>
+        <td>${fmt(file.size)}</td>
+        <td>${fmt(compressedBlob.size)}</td>
+        <td>${percent.toFixed(1)} %</td>
+        <td><a href="${url}" download="${file.name}" class="text-blue-600 underline">Save</a></td>
+      </tr>
+    `);
+  }
+});

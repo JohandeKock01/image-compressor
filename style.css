@@ -1,0 +1,8 @@
+/* Custom tweaks */
+html.dark body{
+  background:#1e293b;
+  color:#e2e8f0;
+}
+#drop-zone.dragover{
+  border-color:#3b82f6;
+}

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Free PNG & JPG Compressor – Reduce Image Size Online</title>
+  <meta name="description" content="Drag & drop PNG or JPG files up to 10 MB and compress them to a few kilobytes without losing quality.">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Google AdSense placeholder: replace ca-pub-XXXXXXXXXXXX with your own ID -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXX" crossorigin="anonymous"></script>
+  <!-- Tailwind via CDN for quick start -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="bg-gray-50 font-sans leading-relaxed">
+  <header class="text-center py-6">
+    <h1 class="text-3xl font-bold">Instant Image Compressor</h1>
+    <p class="text-gray-600">Shrink PNG & JPG files from 10 MB to a few kilobytes – free & offline</p>
+  </header>
+
+  <main class="max-w-xl mx-auto px-4">
+    <!-- Drag-and-drop area -->
+    <div id="drop-zone" class="border-4 border-dashed border-gray-300 rounded-2xl bg-white p-8 text-center cursor-pointer hover:border-blue-400 transition">
+      <p class="text-lg">Drag & drop images here<br><span class="text-sm text-gray-500">or click to select files (max 10 MB each, 20 at once)</span></p>
+      <input type="file" id="file-input" multiple accept="image/png,image/jpeg" class="hidden">
+    </div>
+
+    <!-- Start button -->
+    <button id="start-btn" class="mt-6 w-full py-3 rounded-xl bg-blue-600 text-white text-lg disabled:opacity-50" disabled>
+      🔧 Compress Images
+    </button>
+
+    <!-- Results table -->
+    <table id="results" class="w-full mt-8 hidden">
+      <thead>
+        <tr class="text-left border-b">
+          <th>File</th><th>Original</th><th>Compressed</th><th>Saved %</th><th>Download</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <!-- Google AdSense responsive ad (non‑intrusive) -->
+    <ins class="adsbygoogle block my-8"
+         data-ad-client="ca-pub-XXXXXXXXXXXX"
+         data-ad-slot="1234567890"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+
+    <!-- SEO text block -->
+    <section class="prose mt-12 text-gray-700">
+      <h2>Why compress images?</h2>
+      <p>Large PNG or JPG pictures slow down your website and hurt SEO scores. Use this free online image compressor to reduce file size, speed up page load times and save bandwidth – all without losing visible quality.</p>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/browser-image-compression@2.0.1/dist/browser-image-compression.js"></script>
+  <script src="https://unpkg.com/upng-js@2.1.0/dist/UPNG.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
