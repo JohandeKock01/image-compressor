@@ -1,4 +1,4 @@
- const dropZone   = document.getElementById('drop-zone');
+const dropZone   = document.getElementById('drop-zone');
 const fileInput  = document.getElementById('file-input');
 const startBtn   = document.getElementById('start-btn');
 const resultsTbl = document.getElementById('results').querySelector('tbody');
@@ -49,7 +49,7 @@ fileInput.addEventListener('change', e => handleFiles(e.target.files));
 startBtn.addEventListener('click', async () => {
   enableStart();
   resultsTbl.innerHTML = '';
-  resultsTable.classList.remove('hidden');
+  resultsTable.classList.remove('hidden'); // <-- This ensures the table appears!
 
   for(const file of files){
     let compressedBlob;
@@ -89,15 +89,5 @@ startBtn.addEventListener('click', async () => {
         <td class="py-2 px-3 font-mono">${file.name}</td>
         <td class="py-2 px-3">${fmt(file.size)}</td>
         <td class="py-2 px-3">${fmt(compressedBlob.size)}</td>
-        <td class="py-2 px-3 font-semibold ${percent > 0 ? 'text-green-700' : 'text-gray-500'}">${percent > 0 ? percent.toFixed(1) : '0.0'} %</td>
-        <td class="py-2 px-3">
-          <a href="${url}" download="${file.name}" 
-            class="inline-block px-4 py-2 rounded bg-green-600 hover:bg-green-700 text-white font-semibold shadow transition"
-            title="Download compressed image">
-            ⬇️ Download
-          </a>
-        </td>
-      </tr>
-    `);
-  }
-});
+        <td class="py-2 px-3 font-semibold ${percent > 0 ? 'text-green-700' : 'text-gray-500'}">${percent > 0 ? percent.toFixed(1) : '0.*
+
