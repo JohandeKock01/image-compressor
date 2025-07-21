@@ -1,7 +1,8 @@
-const dropZone   = document.getElementById('drop-zone');
+ const dropZone   = document.getElementById('drop-zone');
 const fileInput  = document.getElementById('file-input');
 const startBtn   = document.getElementById('start-btn');
 const resultsTbl = document.getElementById('results').querySelector('tbody');
+const resultsTable = document.getElementById('results');
 let files = [];
 
 const fmt = bytes => {
@@ -26,7 +27,6 @@ function enableStart() {
     : "";
 }
 
-// Pick files
 function handleFiles(fileList){
   files = [...fileList].slice(0,20); // limit 20
   enableStart();
@@ -49,20 +49,36 @@ fileInput.addEventListener('change', e => handleFiles(e.target.files));
 startBtn.addEventListener('click', async () => {
   enableStart();
   resultsTbl.innerHTML = '';
-  resultsTbl.closest('table').classList.remove('hidden');
+  resultsTable.classList.remove('hidden');
 
   for(const file of files){
     let compressedBlob;
-    if(file.type === 'image/png'){
-      const arrayBuffer = await file.arrayBuffer();
-      const png = UPNG.decode(arrayBuffer);
-      const quant = UPNG.encode([arrayBuffer], png.width, png.height, 256);
-      compressedBlob = new Blob([quant], {type:'image/png'});
-    } else {
-      compressedBlob = await imageCompression(file, {
-        maxSizeMB: 1,
-        useWebWorker: true
-      });
+    let error = null;
+    try {
+      if(file.type === 'image/png'){
+        const arrayBuffer = await file.arrayBuffer();
+        const png = UPNG.decode(arrayBuffer);
+        const quant = UPNG.encode([arrayBuffer], png.width, png.height, 256);
+        compressedBlob = new Blob([quant], {type:'image/png'});
+      } else {
+        compressedBlob = await imageCompression(file, {
+          maxSizeMB: 1,
+          useWebWorker: true
+        });
+      }
+    } catch (e) {
+      error = e.message || 'Compression failed';
+    }
+
+    if (error) {
+      resultsTbl.insertAdjacentHTML('beforeend', `
+        <tr class="border-t bg-red-50">
+          <td class="py-2 px-3 font-mono">${file.name}</td>
+          <td class="py-2 px-3">${fmt(file.size)}</td>
+          <td class="py-2 px-3 text-red-600" colspan="3">${error}</td>
+        </tr>
+      `);
+      continue;
     }
 
     const percent = 100 - (compressedBlob.size / file.size * 100);
@@ -70,13 +86,13 @@ startBtn.addEventListener('click', async () => {
 
     resultsTbl.insertAdjacentHTML('beforeend',`
       <tr class="border-t">
-        <td class="py-2">${file.name}</td>
-        <td class="py-2">${fmt(file.size)}</td>
-        <td class="py-2">${fmt(compressedBlob.size)}</td>
-        <td class="py-2">${percent > 0 ? percent.toFixed(1) : '0.0'} %</td>
-        <td class="py-2">
+        <td class="py-2 px-3 font-mono">${file.name}</td>
+        <td class="py-2 px-3">${fmt(file.size)}</td>
+        <td class="py-2 px-3">${fmt(compressedBlob.size)}</td>
+        <td class="py-2 px-3 font-semibold ${percent > 0 ? 'text-green-700' : 'text-gray-500'}">${percent > 0 ? percent.toFixed(1) : '0.0'} %</td>
+        <td class="py-2 px-3">
           <a href="${url}" download="${file.name}" 
-            class="inline-block px-3 py-1 rounded bg-green-500 hover:bg-green-600 text-white font-semibold transition"
+            class="inline-block px-4 py-2 rounded bg-green-600 hover:bg-green-700 text-white font-semibold shadow transition"
             title="Download compressed image">
             ⬇️ Download
           </a>
