@@ -57,9 +57,7 @@ startBtn.addEventListener('click', async () => {
     try {
       if (file.type === 'image/png') {
         const arrayBuffer = await file.arrayBuffer();
-        // Decode PNG
         const png = UPNG.decode(arrayBuffer);
-        // Re-encode PNG with quantization
         const quant = UPNG.encode([new Uint8Array(arrayBuffer)], png.width, png.height, 256);
         compressedBlob = new Blob([quant], { type: 'image/png' });
       } else if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
@@ -93,5 +91,15 @@ startBtn.addEventListener('click', async () => {
         <td class="py-2 px-3 font-mono">${file.name}</td>
         <td class="py-2 px-3">${fmt(file.size)}</td>
         <td class="py-2 px-3">${fmt(compressedBlob.size)}</td>
-        <td class="py-2 px-3 font-semibold ${percent > 0 ? 'text-green-700' : 'text-gray-*`
-
+        <td class="py-2 px-3 font-semibold ${percent > 0 ? 'text-green-700' : 'text-gray-500'}">${percent > 0 ? percent.toFixed(1) : '0.0'} %</td>
+        <td class="py-2 px-3">
+          <a href="${url}" download="${file.name}"
+            class="inline-block px-4 py-2 rounded bg-green-600 hover:bg-green-700 text-white font-semibold shadow transition"
+            title="Download compressed image">
+            ⬇️ Download
+          </a>
+        </td>
+      </tr>
+    `);
+  }
+});
