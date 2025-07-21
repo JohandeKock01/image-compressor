@@ -70,11 +70,17 @@ startBtn.addEventListener('click', async () => {
 
     resultsTbl.insertAdjacentHTML('beforeend',`
       <tr class="border-t">
-        <td>${file.name}</td>
-        <td>${fmt(file.size)}</td>
-        <td>${fmt(compressedBlob.size)}</td>
-        <td>${percent.toFixed(1)} %</td>
-        <td><a href="${url}" download="${file.name}" class="text-blue-600 underline">Save</a></td>
+        <td class="py-2">${file.name}</td>
+        <td class="py-2">${fmt(file.size)}</td>
+        <td class="py-2">${fmt(compressedBlob.size)}</td>
+        <td class="py-2">${percent > 0 ? percent.toFixed(1) : '0.0'} %</td>
+        <td class="py-2">
+          <a href="${url}" download="${file.name}" 
+            class="inline-block px-3 py-1 rounded bg-green-500 hover:bg-green-600 text-white font-semibold transition"
+            title="Download compressed image">
+            ⬇️ Download
+          </a>
+        </td>
       </tr>
     `);
   }
