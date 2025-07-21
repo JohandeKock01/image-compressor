@@ -1,8 +1,8 @@
-const dropZone   = document.getElementById('drop-zone');
-const fileInput  = document.getElementById('file-input');
-const startBtn   = document.getElementById('start-btn');
-const resultsTbl = document.getElementById('results').querySelector('tbody');
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+const startBtn = document.getElementById('start-btn');
 const resultsTable = document.getElementById('results');
+const resultsTbl = resultsTable.querySelector('tbody');
 let files = [];
 
 const fmt = bytes => {
@@ -27,8 +27,8 @@ function enableStart() {
     : "";
 }
 
-function handleFiles(fileList){
-  files = [...fileList].slice(0,20); // limit 20
+function handleFiles(fileList) {
+  files = [...fileList].slice(0, 20); // limit 20
   enableStart();
   fileInput.value = ""; // Allow re-uploading the same file
 }
@@ -49,22 +49,26 @@ fileInput.addEventListener('change', e => handleFiles(e.target.files));
 startBtn.addEventListener('click', async () => {
   enableStart();
   resultsTbl.innerHTML = '';
-  resultsTable.classList.remove('hidden'); // <-- This ensures the table appears!
+  resultsTable.classList.remove('hidden');
 
-  for(const file of files){
+  for (const file of files) {
     let compressedBlob;
     let error = null;
     try {
-      if(file.type === 'image/png'){
+      if (file.type === 'image/png') {
         const arrayBuffer = await file.arrayBuffer();
+        // Decode PNG
         const png = UPNG.decode(arrayBuffer);
-        const quant = UPNG.encode([arrayBuffer], png.width, png.height, 256);
-        compressedBlob = new Blob([quant], {type:'image/png'});
-      } else {
+        // Re-encode PNG with quantization
+        const quant = UPNG.encode([new Uint8Array(arrayBuffer)], png.width, png.height, 256);
+        compressedBlob = new Blob([quant], { type: 'image/png' });
+      } else if (file.type === 'image/jpeg' || file.type === 'image/jpg') {
         compressedBlob = await imageCompression(file, {
           maxSizeMB: 1,
           useWebWorker: true
         });
+      } else {
+        throw new Error('Only PNG and JPEG files are supported.');
       }
     } catch (e) {
       error = e.message || 'Compression failed';
@@ -82,12 +86,12 @@ startBtn.addEventListener('click', async () => {
     }
 
     const percent = 100 - (compressedBlob.size / file.size * 100);
-    const url  = URL.createObjectURL(compressedBlob);
+    const url = URL.createObjectURL(compressedBlob);
 
-    resultsTbl.insertAdjacentHTML('beforeend',`
+    resultsTbl.insertAdjacentHTML('beforeend', `
       <tr class="border-t">
         <td class="py-2 px-3 font-mono">${file.name}</td>
         <td class="py-2 px-3">${fmt(file.size)}</td>
         <td class="py-2 px-3">${fmt(compressedBlob.size)}</td>
-        <td class="py-2 px-3 font-semibold ${percent > 0 ? 'text-green-700' : 'text-gray-500'}">${percent > 0 ? percent.toFixed(1) : '0.*
+        <td class="py-2 px-3 font-semibold ${percent > 0 ? 'text-green-700' : 'text-gray-*`
 
